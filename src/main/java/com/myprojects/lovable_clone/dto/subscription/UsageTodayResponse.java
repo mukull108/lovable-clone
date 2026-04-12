@@ -1,9 +1,9 @@
 package com.myprojects.lovable_clone.dto.subscription;
 
 public record UsageTodayResponse(
-        int tokenUsed,
-        int tokenLimit,
-        int previewsRunning,
-        int previewsLimit
+        Integer tokenUsed,
+        Integer tokenLimit,
+        Integer previewsRunning,
+        Integer previewsLimit
 ) {
 }
