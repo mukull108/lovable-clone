@@ -1,26 +1,27 @@
 package com.myprojects.lovable_clone.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
-//@Entity
-//@Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "users") // 'user' is a reserved keyword in some databases
+@Builder
 public class User {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-//    @Column(unique = true)
+    @Column(unique = true)
     String email;
 
     String name;
@@ -29,10 +30,10 @@ public class User {
 
     String avatar_url;
 
-//    @CreationTimestamp
+    @CreationTimestamp
     Instant createdAt;
 
-//    @UpdateTimestamp
+    @UpdateTimestamp
     Instant updatedAt;
 
     Instant deletedAt; //soft delete

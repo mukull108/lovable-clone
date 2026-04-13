@@ -5,6 +5,7 @@ import com.myprojects.lovable_clone.dto.project.ProjectResponse;
 import com.myprojects.lovable_clone.dto.project.ProjectSummaryResponse;
 import com.myprojects.lovable_clone.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,10 @@ import java.util.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/projects")
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class ProjectController {
 
-    private ProjectService projectService;
+    ProjectService projectService;
 
     @GetMapping
     public ResponseEntity<List<ProjectSummaryResponse>> getProject(){

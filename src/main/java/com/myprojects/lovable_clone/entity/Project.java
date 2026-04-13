@@ -1,10 +1,10 @@
 package com.myprojects.lovable_clone.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -12,12 +12,23 @@ import java.time.Instant;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "projects")
+@Builder
 public class Project {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(nullable = false)
     String name;
-    Long ownerId;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id",nullable = false)
+    User owner;
     Boolean isPublic=false;
+    @CreationTimestamp
     Instant createdAt;
+    @UpdateTimestamp
     Instant updatedAt;
     Instant deletedAt; //soft delete
 }
