@@ -7,6 +7,7 @@ import com.myprojects.lovable_clone.entity.Project;
 import com.myprojects.lovable_clone.entity.ProjectMember;
 import com.myprojects.lovable_clone.entity.ProjectMemberId;
 import com.myprojects.lovable_clone.entity.User;
+import com.myprojects.lovable_clone.exceptions.ResourceNotFoundException;
 import com.myprojects.lovable_clone.mapper.ProjectMemberMapper;
 import com.myprojects.lovable_clone.repository.ProjectMemberRepository;
 import com.myprojects.lovable_clone.repository.ProjectRepository;
@@ -107,6 +108,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     public Project getAccessibleProjectById(Long id, Long userId) {
-        return projectRepository.findAccessibleProjectByIdAndUserId(id, userId).orElseThrow();
+        return projectRepository.findAccessibleProjectByIdAndUserId(id, userId).orElseThrow(() -> new ResourceNotFoundException("Project", id.toString()));
     }
 }

@@ -5,6 +5,7 @@ import com.myprojects.lovable_clone.dto.project.ProjectResponse;
 import com.myprojects.lovable_clone.dto.project.ProjectSummaryResponse;
 import com.myprojects.lovable_clone.entity.Project;
 import com.myprojects.lovable_clone.entity.User;
+import com.myprojects.lovable_clone.exceptions.ResourceNotFoundException;
 import com.myprojects.lovable_clone.mapper.ProjectMapper;
 import com.myprojects.lovable_clone.repository.ProjectRepository;
 import com.myprojects.lovable_clone.repository.UserRepository;
@@ -74,6 +75,6 @@ public class ProjectServiceImpl implements ProjectService {
         Project deletedProject = projectRepository.save(project);
     }
     public Project getAccessibleProjectById(Long id, Long userId) {
-        return projectRepository.findAccessibleProjectByIdAndUserId(id,userId).orElseThrow();
+        return projectRepository.findAccessibleProjectByIdAndUserId(id,userId).orElseThrow(() -> new ResourceNotFoundException("Project", id.toString()));
     }
 }
