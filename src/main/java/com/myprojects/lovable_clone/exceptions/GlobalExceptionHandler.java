@@ -34,6 +34,12 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> new ApiFieldError(fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
 
+//        var fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+//                .collect(Collectors.toMap(
+//                        fieldError -> fieldError.getField(),
+//                        fieldError -> fieldError.getDefaultMessage()
+//                ));
+
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Input Validation Failed",fieldErrors);
         log.error("Not Valid request: ", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
