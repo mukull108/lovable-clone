@@ -11,6 +11,8 @@ public record ApiError(
         String message,
         Instant timestamp,
         @JsonInclude(JsonInclude.Include.NON_NULL) List<ApiFieldError> errors
+//        @JsonInclude(JsonInclude.Include.NON_NULL) Map<String, String> errors
+
 ) {
     //constructor with all the filed would be here
 
