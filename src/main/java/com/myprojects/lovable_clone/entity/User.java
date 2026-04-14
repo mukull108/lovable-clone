@@ -22,13 +22,9 @@ public class User {
     Long id;
 
     @Column(unique = true)
-    String email;
-
+    String username;
+    String password;
     String name;
-
-    String password_hash;
-
-    String avatar_url;
 
     @CreationTimestamp
     Instant createdAt;
