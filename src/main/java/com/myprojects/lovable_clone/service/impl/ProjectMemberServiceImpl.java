@@ -46,7 +46,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
         Project project = getAccessibleProjectById(projectId, userId);
 
-        User invitee = userRepository.findUserByEmail(request.username()).orElseThrow();
+        User invitee = userRepository.findUserByUsername(request.username()).orElseThrow();
         if (invitee.getId().equals(userId)) {
             throw new RuntimeException("Owner cannot invite themselves");
         }
