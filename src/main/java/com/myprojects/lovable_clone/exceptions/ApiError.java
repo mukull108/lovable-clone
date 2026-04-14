@@ -25,6 +25,10 @@ public record ApiError(
         this(status, message, Instant.now(),errors);
     }
 
+//     public ApiError(HttpStatus status, String message, Map<String, String> errors) {
+//        this(status, message, Instant.now(),errors);
+//    }
+
 }
 
 record ApiFieldError(
