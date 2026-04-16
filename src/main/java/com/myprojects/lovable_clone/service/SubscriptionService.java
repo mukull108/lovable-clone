@@ -7,9 +7,9 @@ import com.myprojects.lovable_clone.dto.subscription.SubscriptionResponse;
 import org.jspecify.annotations.Nullable;
 
 public interface SubscriptionService {
-    SubscriptionResponse getCurrentSubscription(Long userId);
+    SubscriptionResponse getCurrentSubscription();
 
-    CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request, Long userId);
+    CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request);
 
-    PortalResponse openCustomerPortal(Long userId);
+    PortalResponse openCustomerPortal();
 }

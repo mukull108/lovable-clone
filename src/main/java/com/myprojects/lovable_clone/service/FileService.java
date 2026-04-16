@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public interface FileService {
-    List<FileNode> getFileTree(Long projectId, Long userId);
+    List<FileNode> getFileTree(Long projectId);
 
-    FileContentResponse getFileContent(Long projectId, String path, Long userId);
+    FileContentResponse getFileContent(Long projectId, String path);
 }

@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.http.ProblemDetail;
 
 public interface UsageService {
-    UsageTodayResponse getTodayUsageOfUser(Long userId);
+    UsageTodayResponse getTodayUsageOfUser();
 
-    PlanLimitResponse getCurrentSubscriptionLimitsOfUser(Long userId);
+    PlanLimitResponse getCurrentSubscriptionLimitsOfUser();
 }

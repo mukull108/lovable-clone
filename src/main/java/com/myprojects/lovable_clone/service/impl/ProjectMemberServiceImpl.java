@@ -12,6 +12,7 @@ import com.myprojects.lovable_clone.mapper.ProjectMemberMapper;
 import com.myprojects.lovable_clone.repository.ProjectMemberRepository;
 import com.myprojects.lovable_clone.repository.ProjectRepository;
 import com.myprojects.lovable_clone.repository.UserRepository;
+import com.myprojects.lovable_clone.security.AuthUtils;
 import com.myprojects.lovable_clone.service.ProjectMemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,11 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     ProjectRepository projectRepository;
     ProjectMemberMapper projectMemberMapper;
     UserRepository userRepository;
+    AuthUtils authUtils;
 
     @Override
-    public List<MemberResponse> getProjectMembers(Long userId, Long projectId) {
+    public List<MemberResponse> getProjectMembers(Long projectId) {
+        Long userId = authUtils.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
         return projectMemberRepository.findByIdProjectId(projectId)
                 .stream()
@@ -43,7 +46,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
+    public MemberResponse inviteMember(Long projectId, InviteMemberRequest request) {
+        Long userId = authUtils.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
 
         User invitee = userRepository.findUserByUsername(request.username()).orElseThrow();
@@ -69,7 +73,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse changeMemberRole(Long projectId, Long userId, Long memberId, UpdateMemberRoleRequest updateMemberRoleRequest) {
+    public MemberResponse changeMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest updateMemberRoleRequest) {
+        Long userId = authUtils.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
@@ -82,7 +87,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public void removeProjectMember(Long projectId, Long userId, Long memberId) {
+    public void removeProjectMember(Long projectId, Long memberId) {
+        Long userId = authUtils.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);

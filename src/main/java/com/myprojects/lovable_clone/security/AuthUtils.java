@@ -5,6 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -44,6 +47,15 @@ public class AuthUtils {
 
         return new JwtUserPrincipal(userId, username);
 
+    }
+
+    public Long getCurrentUserId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || !(authentication.getPrincipal() instanceof JwtUserPrincipal)){
+            throw new AuthenticationCredentialsNotFoundException("No Jwt Found");
+        }
+        JwtUserPrincipal user = (JwtUserPrincipal) authentication.getPrincipal();
+        return user.getUserId();
     }
 
 

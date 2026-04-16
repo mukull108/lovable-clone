@@ -4,11 +4,13 @@ import com.myprojects.lovable_clone.dto.auth.AuthResponse;
 import com.myprojects.lovable_clone.dto.auth.LoginRequest;
 import com.myprojects.lovable_clone.dto.auth.SignupRequest;
 import com.myprojects.lovable_clone.dto.auth.UserProfileResponse;
+import com.myprojects.lovable_clone.security.JwtUserPrincipal;
 import com.myprojects.lovable_clone.service.AuthService;
 import com.myprojects.lovable_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,8 +34,8 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getProfile(){
-        Long userId = 1L;
-        return ResponseEntity.ok(userService.getProfile(userId));
+        JwtUserPrincipal principal = (JwtUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(userService.getProfile(principal.getUserId()));
 
     }
 
