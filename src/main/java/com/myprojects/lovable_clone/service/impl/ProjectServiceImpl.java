@@ -38,8 +38,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
         Long userId = authUtils.getCurrentUserId();
-        User owner = userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User", userId.toString()));
+//        User owner = userRepository.findById(userId).orElseThrow(
+//                () -> new ResourceNotFoundException("User", userId.toString()));
+        User owner = userRepository.getReferenceById(userId); // only works in transactional context, otherwise it will throw EntityNotFoundException when accessed. But since this method is transactional, it's fine to use getReferenceById which is more efficient than findById in this case.
         Project project = Project.builder()
                 .name(request.name())
                 .isPublic(false)
