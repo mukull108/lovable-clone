@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+
 import java.util.List;
 
 @Getter
@@ -15,7 +16,8 @@ public class JwtUserPrincipal {
     List<GrantedAuthority> authorities;
 
     public JwtUserPrincipal(Long userId, String username) {
-        this.userId=userId;
-        this.username=username;
+        this.userId = userId;
+        this.username = username;
+        this.authorities = List.of();
     }
 }

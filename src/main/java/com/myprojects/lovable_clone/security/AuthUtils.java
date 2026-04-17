@@ -16,6 +16,7 @@ import java.util.Date;
 
 @Component
 public class AuthUtils {
+    private static final long ACCESS_TOKEN_VALIDITY_MILLIS = 10 * 60 * 1000L;
 
     @Value("${app.jwt.secret-key}")
     private String jwtSecret;
@@ -25,14 +26,16 @@ public class AuthUtils {
     }
 
     public String generateAccessToken(User user) {
+        Date issuedAt = new Date();
+        Date expiration = new Date(issuedAt.getTime() + ACCESS_TOKEN_VALIDITY_MILLIS);
+
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim("userId", user.getId().toString())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() * 1000 * 60 * 10)) //valid for 10 mins
+                .issuedAt(issuedAt)
+                .expiration(expiration)
                 .signWith(getSecretKey())
                 .compact();
-
     }
 
     public JwtUserPrincipal verifyAccessToken(String token){

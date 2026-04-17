@@ -16,7 +16,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             AND EXISTS (
                 SELECT 1 FROM ProjectMember pm
                 WHERE pm.id.userId = :userId
-                AND pm.id.projectId = :p.id
+                AND pm.id.projectId = p.id
             )
             ORDER BY p.updatedAt DESC
             """)

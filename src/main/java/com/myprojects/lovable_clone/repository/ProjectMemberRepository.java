@@ -4,9 +4,11 @@ import com.myprojects.lovable_clone.entity.ProjectMember;
 import com.myprojects.lovable_clone.entity.ProjectMemberId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, ProjectMemberId> {
 
     List<ProjectMember> findByIdProjectId(Long projectId);
+    Optional<ProjectMember> findByIdProjectIdAndIdUserId(Long projectId, Long userId);
 
 }

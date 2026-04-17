@@ -4,13 +4,12 @@ import com.myprojects.lovable_clone.dto.auth.AuthResponse;
 import com.myprojects.lovable_clone.dto.auth.LoginRequest;
 import com.myprojects.lovable_clone.dto.auth.SignupRequest;
 import com.myprojects.lovable_clone.dto.auth.UserProfileResponse;
-import com.myprojects.lovable_clone.security.JwtUserPrincipal;
 import com.myprojects.lovable_clone.service.AuthService;
 import com.myprojects.lovable_clone.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,20 +22,18 @@ public class AuthController {
     UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signUp(@RequestBody SignupRequest signupRequest){
+    public ResponseEntity<AuthResponse> signUp(@RequestBody @Valid SignupRequest signupRequest){
         return ResponseEntity.ok(authService.signup(signupRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest loginRequest){
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getProfile(){
-        JwtUserPrincipal principal = (JwtUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok(userService.getProfile(principal.getUserId()));
-
+        return ResponseEntity.ok(userService.getProfile());
     }
 
 }

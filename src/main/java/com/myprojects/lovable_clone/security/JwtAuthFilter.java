@@ -1,5 +1,6 @@
 package com.myprojects.lovable_clone.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,12 +31,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwtToken = requestHeaderToken.split("Bearer ")[1];
+        String jwtToken = requestHeaderToken.substring(7);
 
-        JwtUserPrincipal user = authUtils.verifyAccessToken(jwtToken);
-        if(user != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        try {
+            JwtUserPrincipal user = authUtils.verifyAccessToken(jwtToken);
+            if(user != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        } catch (JwtException | IllegalArgumentException ex) {
+            log.warn("Invalid JWT for request {}: {}", request.getRequestURI(), ex.getMessage());
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request,response);
