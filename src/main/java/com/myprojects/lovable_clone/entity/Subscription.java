@@ -33,7 +33,7 @@ public class Subscription {
     @JoinColumn(name = "plan_id", nullable = false)
     Plan plan;
 
-    @Column(unique = true)
+    @Column
     String stripeCustomerId;
 
     @Column(unique = true)

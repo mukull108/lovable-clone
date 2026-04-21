@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ChatSessionRepository extends JpaRepository<ChatSession, Long> {
     List<ChatSession> findByProjectIdAndDeletedAtIsNullOrderByUpdatedAtDesc(Long projectId);
+
+    java.util.Optional<ChatSession> findByIdAndProjectIdAndDeletedAtIsNull(Long id, Long projectId);
 }

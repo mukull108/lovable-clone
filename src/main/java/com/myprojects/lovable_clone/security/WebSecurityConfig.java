@@ -19,13 +19,14 @@ public class WebSecurityConfig {
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(csrfConfig -> csrfConfig.disable()) //disable CSRF for stateless APIs
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionConfig -> exceptionConfig.authenticationEntryPoint(restAuthenticationEntryPoint))
                 .authorizeHttpRequests(authConfig -> authConfig
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/stripe/webhook").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -40,7 +41,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration){
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

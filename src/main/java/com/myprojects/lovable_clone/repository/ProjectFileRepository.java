@@ -10,4 +10,8 @@ public interface ProjectFileRepository extends JpaRepository<ProjectFile, Long> 
     List<ProjectFile> findByProjectIdOrderByPathAsc(Long projectId);
 
     Optional<ProjectFile> findByProjectIdAndPath(Long projectId, String path);
+
+    boolean existsByProjectIdAndPath(Long projectId, String path);
+
+    void deleteByProjectIdAndPath(Long projectId, String path);
 }

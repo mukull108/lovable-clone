@@ -37,6 +37,10 @@ public class ProjectFile {
     @Column(nullable = false, unique = true)
     String minioObjectKey;
 
+    @Lob
+    @Column(nullable = false)
+    String content;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     Instant createdAt;

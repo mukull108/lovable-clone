@@ -14,4 +14,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Optional<Subscription> findTopByUserIdAndStatusInOrderByCreatedAtDesc(Long userId, Collection<SubscriptionStatus> statuses);
 
     List<Subscription> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    Optional<Subscription> findByStripeSubscriptionId(String stripeSubscriptionId);
+
+    Optional<Subscription> findTopByUserIdAndStripeCustomerIdIsNotNullOrderByCreatedAtDesc(Long userId);
 }

@@ -1,6 +1,13 @@
 spring:
   application:
     name: lovable-clone
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: ${OPENAI_CHAT_MODEL:gpt-4o-mini}
+          temperature: 0.2
 
   #database config
   datasource:
@@ -21,4 +28,11 @@ spring:
 app:
   jwt:
     secret-key: laksdfjlkajds32dasjflkadsj9823147asdfads
-
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+    checkout-success-url: ${STRIPE_CHECKOUT_SUCCESS_URL:http://localhost:3000/billing/success}
+    checkout-cancel-url: ${STRIPE_CHECKOUT_CANCEL_URL:http://localhost:3000/billing/cancel}
+    portal-return-url: ${STRIPE_PORTAL_RETURN_URL:http://localhost:3000/settings/billing}
+  ai:
+    generation-system-prompt: ${AI_GENERATION_SYSTEM_PROMPT:You are a senior full-stack app generator. Return only valid JSON. Generate a small but coherent starter project from the user's prompt. Prefer React with Vite unless the user clearly requests another stack. Output full file contents only.}
