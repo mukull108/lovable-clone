@@ -1,23 +1,22 @@
 package com.myprojects.lovable_clone.enums;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
-import static com.myprojects.lovable_clone.enums.ProjectPermissions.*;
+import static com.myprojects.lovable_clone.enums.Permissions.*;
 
 @Getter
 public enum ProjectRole {
 
-    VIEWER(VIEW),
-    EDITOR(EDIT, VIEW, DELETE),
-    OWNER(VIEW, EDIT, DELETE, MANAGE_MEMBERS);
+    VIEWER(VIEW, VIEW_MEMBERS),
+    EDITOR(EDIT, VIEW, DELETE, VIEW_MEMBERS),
+    OWNER(VIEW, EDIT, DELETE, MANAGE_MEMBERS, VIEW_MEMBERS);
 
-    ProjectRole(ProjectPermissions... permissions) {
+    ProjectRole(Permissions... permissions) {
         this.permissions = Set.of(permissions);
     }
 
-    private final Set<ProjectPermissions> permissions;
+    private final Set<Permissions> permissions;
 
 
 }
