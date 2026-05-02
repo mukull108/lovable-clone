@@ -20,8 +20,6 @@ public class Subscription {
 
     Plan plan;
 
-    String stripeCustomerId;
-
     String stripeSubscriptionId;
 
     Instant currentPeriodStart;

@@ -8,8 +8,4 @@ import org.jspecify.annotations.Nullable;
 
 public interface SubscriptionService {
     SubscriptionResponse getCurrentSubscription();
-
-    CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request);
-
-    PortalResponse openCustomerPortal();
 }
