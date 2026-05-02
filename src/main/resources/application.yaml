@@ -20,13 +20,13 @@ spring:
 
 app:
   jwt:
-    secret-key:
+    secret-key: ${JWT_SECRET_KEY:default}
 
 stripe:
   api:
-    secret:
+    secret: ${STRIPE_API_SECRET:default}
   webhook:
-    secret:
+    secret: ${STRIPE_WEBHOOK_SECRET:default}
 client:
   url: http://localhost:8080
 
