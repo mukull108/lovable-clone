@@ -20,13 +20,13 @@ spring:
 
 app:
   jwt:
-    secret-key: laksdfjlkajds32dasjflkadsj9823147asdfads
+    secret-key:
 
 stripe:
   api:
-    secret: sk_test_51S8HQWK3vtImCYUZyVBOl0QZV49TiX7brmllfHcQbSonZcEXAUGVFsbrArNvsC2NKGrTgTpIiN43TredDYt2SW8Y00RcLJpIJs
+    secret:
   webhook:
-    secret: whsec_2ec3e5b1507f2702791fa9f435e5dd1ac0a5032ad057cd7cbda9610ccc8a668b
+    secret:
 client:
   url: http://localhost:8080
 
