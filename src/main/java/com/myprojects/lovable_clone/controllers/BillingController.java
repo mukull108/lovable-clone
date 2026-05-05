@@ -83,6 +83,7 @@ public class BillingController {
                 }
             }
 
+            //now extract the metadata only if it's a checkout session.
             Map<String, String> metadata = new HashMap<>();
             if(stripeObject instanceof  Session session){
                 metadata = session.getMetadata();
