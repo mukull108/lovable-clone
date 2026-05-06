@@ -22,5 +22,5 @@ public interface SubscriptionService {
 
     void renewSubscriptionPeriod(String subscriptionId, Instant currentPeriodStart, Instant currentPeriodEnd);
 
-    void markSubscriptionPastDue(String subscriptionId);
+    void markSubscriptionPastDue(String stripeSubscriptionId);
 }

@@ -12,12 +12,15 @@ import com.myprojects.lovable_clone.repository.SubscriptionRepository;
 import com.myprojects.lovable_clone.repository.UserRepository;
 import com.myprojects.lovable_clone.security.AuthUtils;
 import com.myprojects.lovable_clone.service.SubscriptionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -42,8 +45,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void activateSubscriptionForUser(String subscriptionId, Long userId, Long planId) {
-        boolean exists = subscriptionRepository.existsByStripeSubscriptionId(subscriptionId);
+    public void activateSubscriptionForUser(String stripeSubscriptionId, Long userId, Long planId) {
+        boolean exists = subscriptionRepository.existsByStripeSubscriptionId(stripeSubscriptionId);
         if (exists) return;
 
         User user = getUser(userId);
@@ -52,7 +55,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = Subscription.builder()
                 .user(user)
                 .plan(plan)
-                .stripeSubscriptionId(subscriptionId)
+                .stripeSubscriptionId(stripeSubscriptionId)
                 .status(SubscriptionStatus.INCOMPLETE)
                 .build();
 
@@ -61,12 +64,44 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void updateSubscription(String subscriptionId, SubscriptionStatus status, Instant currentPeriodStart, Instant currentPeriodEnd, Boolean cancelAtPeriodEnd, Long planId) {
+    @Transactional
+    public void updateSubscription(String stripeSubscriptionId, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
+        Subscription subscription = getSubscription(stripeSubscriptionId);
+        boolean hasSubscriptionUpdated = false;
+        if(status != null && subscription.getStatus() != status){
+            subscription.setStatus(status);
+            hasSubscriptionUpdated=true;
+        }
+        if(periodStart != null && !periodStart.equals(subscription.getCurrentPeriodStart())){
+            subscription.setCurrentPeriodStart(periodStart);
+            hasSubscriptionUpdated=true;
+        }
+        if(periodEnd != null && !periodEnd.equals(subscription.getCurrentPeriodEnd())){
+            subscription.setCurrentPeriodEnd(periodEnd);
+            hasSubscriptionUpdated=true;
+        }
+        if(cancelAtPeriodEnd != null && !cancelAtPeriodEnd.equals(subscription.getCancelAtPeriodEnd())){
+            subscription.setCancelAtPeriodEnd(cancelAtPeriodEnd);
+            hasSubscriptionUpdated=true;
+        }
+        if(planId != null&& !planId.equals(subscription.getPlan().getId())){
+            Plan plan = getPlan(planId);
+            subscription.setPlan(plan);
+            hasSubscriptionUpdated=true;
+        }
 
+        if(hasSubscriptionUpdated){
+            log.debug("Subscription has been updated for sub id: {}",stripeSubscriptionId);
+            subscriptionRepository.save(subscription);
+        }
     }
 
     @Override
-    public void cancelSubscription(String subscriptionId) {
+    public void cancelSubscription(String stripeSubscriptionId) {
+        Subscription subscription = getSubscription(stripeSubscriptionId);
+        subscription.setStatus(SubscriptionStatus.CANCELED);
+        subscriptionRepository.save(subscription);
+
 
     }
 
@@ -81,14 +116,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (subscription.getStatus() == SubscriptionStatus.PAST_DUE || subscription.getStatus() == SubscriptionStatus.INCOMPLETE) {
             subscription.setStatus(SubscriptionStatus.ACTIVE);
         }
-
         subscriptionRepository.save(subscription);
-
     }
 
     @Override
-    public void markSubscriptionPastDue(String subscriptionId) {
+    public void markSubscriptionPastDue(String stripeSubscriptionId) {
+        Subscription subscription = getSubscription(stripeSubscriptionId);
+        if (subscription.getStatus() == SubscriptionStatus.PAST_DUE) {
+            log.debug("Subscription with stripeSubscriptionId id: {} is already marked as past due", stripeSubscriptionId);
+        }
+        subscription.setStatus(SubscriptionStatus.PAST_DUE);
+        subscriptionRepository.save(subscription);
 
+        //NOTIFY USER VIA EMAIL
     }
 
     /// //utility methods
