@@ -67,7 +67,7 @@ public class StripePaymentProcessor implements PaymentProcessor {
     @Override
     public void handleWebhookEvent(String type, StripeObject stripeObject, Map<String, String> metadata) {
         // Handle the webhook event based on its type and the associated Stripe object
-        log.info("Handling webhook events");
+        log.info("Handling webhook event {}", type);
 
         switch (type) {
             case "checkout.session.completed" -> handleCheckoutSessionCompleted((Session) stripeObject, metadata);
