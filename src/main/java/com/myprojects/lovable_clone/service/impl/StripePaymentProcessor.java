@@ -6,6 +6,7 @@ import com.myprojects.lovable_clone.dto.subscription.PortalResponse;
 import com.myprojects.lovable_clone.entity.Plan;
 import com.myprojects.lovable_clone.entity.User;
 import com.myprojects.lovable_clone.enums.SubscriptionStatus;
+import com.myprojects.lovable_clone.exceptions.BadRequestException;
 import com.myprojects.lovable_clone.exceptions.ResourceNotFoundException;
 import com.myprojects.lovable_clone.repository.PlanRepository;
 import com.myprojects.lovable_clone.repository.UserRepository;
@@ -15,7 +16,6 @@ import com.myprojects.lovable_clone.service.SubscriptionService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,8 +42,8 @@ public class StripePaymentProcessor implements PaymentProcessor {
         Long userId = authUtils.getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", String.valueOf(userId)));
 
-        var params = SessionCreateParams.builder() //I have taken this from the strip subscription documentation
-                .addLineItem(SessionCreateParams.LineItem.builder().setPrice(plan.getStripePriceId()).setQuantity(1L).build()).setMode(SessionCreateParams.Mode.SUBSCRIPTION).setSubscriptionData(new SessionCreateParams.SubscriptionData.Builder().setBillingMode(SessionCreateParams.SubscriptionData.BillingMode.builder().setType(SessionCreateParams.SubscriptionData.BillingMode.Type.FLEXIBLE).build()).build()).setSuccessUrl(FRONTEND_URL + "/success.html?session_id={CHECKOUT_SESSION_ID}").setCancelUrl(FRONTEND_URL + "/cancel.html").putMetadata("userId", String.valueOf(userId)).putMetadata("planId", String.valueOf(plan.getId()));
+        var params = com.stripe.param.checkout.SessionCreateParams.builder() //I have taken this from the strip subscription documentation
+                .addLineItem(com.stripe.param.checkout.SessionCreateParams.LineItem.builder().setPrice(plan.getStripePriceId()).setQuantity(1L).build()).setMode(com.stripe.param.checkout.SessionCreateParams.Mode.SUBSCRIPTION).setSubscriptionData(new com.stripe.param.checkout.SessionCreateParams.SubscriptionData.Builder().build()).setSuccessUrl(FRONTEND_URL + "/success.html?session_id={CHECKOUT_SESSION_ID}").setCancelUrl(FRONTEND_URL + "/cancel.html").putMetadata("userId", String.valueOf(userId)).putMetadata("planId", String.valueOf(plan.getId()));
 
         try {
             String stripCustomerId = user.getStripCustomerId();
@@ -61,7 +61,25 @@ public class StripePaymentProcessor implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal() {
-        return null;
+        Long userId = authUtils.getCurrentUserId();
+        User user = getUser(userId);
+
+        String stripCustomerId = user.getStripCustomerId();
+        if (stripCustomerId == null || stripCustomerId.isBlank()) {
+            throw  new BadRequestException("User with id "+ userId +" does not have a Stripe Customer ID");
+        }
+
+        try {
+            var portalSession = com.stripe.model.billingportal.Session.create(
+                    com.stripe.param.billingportal.SessionCreateParams.builder()
+                            .setCustomer(stripCustomerId)
+                            .setReturnUrl(FRONTEND_URL)
+                            .build()
+            );
+            return new PortalResponse(portalSession.getUrl());
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
