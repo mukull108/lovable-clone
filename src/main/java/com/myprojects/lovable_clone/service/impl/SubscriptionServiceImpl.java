@@ -8,6 +8,7 @@ import com.myprojects.lovable_clone.enums.SubscriptionStatus;
 import com.myprojects.lovable_clone.exceptions.ResourceNotFoundException;
 import com.myprojects.lovable_clone.mapper.SubscriptionMapper;
 import com.myprojects.lovable_clone.repository.PlanRepository;
+import com.myprojects.lovable_clone.repository.ProjectMemberRepository;
 import com.myprojects.lovable_clone.repository.SubscriptionRepository;
 import com.myprojects.lovable_clone.repository.UserRepository;
 import com.myprojects.lovable_clone.security.AuthUtils;
@@ -29,6 +30,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final ProjectMemberRepository projectMemberRepository;
+
+    private final Integer FREE_TIER_PROJECTS_ALLOWED = 1;
 
     @Override
     public SubscriptionResponse getCurrentSubscription() {
@@ -129,6 +133,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.save(subscription);
 
         //NOTIFY USER VIA EMAIL
+    }
+
+    @Override
+    public boolean canCreateProject() {
+        SubscriptionResponse currentSubscription = getCurrentSubscription();
+        Long userId = authUtils.getCurrentUserId();
+        int projectOwnedByUser = projectMemberRepository.countProjectOwnedByUser(userId);
+        if(currentSubscription.plan() == null){
+            return projectOwnedByUser < FREE_TIER_PROJECTS_ALLOWED; // free tier users can only create 1 project
+        }
+        //if user is already having a subscription.
+        Integer maxProjectsForCurrentPlan = currentSubscription.plan().maxProjects();
+
+        return projectOwnedByUser < maxProjectsForCurrentPlan;
     }
 
     /// //utility methods

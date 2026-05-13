@@ -8,6 +8,7 @@ import com.myprojects.lovable_clone.entity.ProjectMember;
 import com.myprojects.lovable_clone.entity.ProjectMemberId;
 import com.myprojects.lovable_clone.entity.User;
 import com.myprojects.lovable_clone.enums.ProjectRole;
+import com.myprojects.lovable_clone.exceptions.BadRequestException;
 import com.myprojects.lovable_clone.exceptions.ResourceNotFoundException;
 import com.myprojects.lovable_clone.mapper.ProjectMapper;
 import com.myprojects.lovable_clone.repository.ProjectMemberRepository;
@@ -15,6 +16,7 @@ import com.myprojects.lovable_clone.repository.ProjectRepository;
 import com.myprojects.lovable_clone.repository.UserRepository;
 import com.myprojects.lovable_clone.security.AuthUtils;
 import com.myprojects.lovable_clone.service.ProjectService;
+import com.myprojects.lovable_clone.service.SubscriptionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,13 +36,16 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
     AuthUtils authUtils;
+    SubscriptionService subscriptionService;
 
 
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
+        //authorization if user can create project based on subscription plan
+        if(!subscriptionService.canCreateProject()){
+            throw new BadRequestException("Project creation limit reached for your subscription plan. Please upgrade your plan to create more projects.");
+        }
         Long userId = authUtils.getCurrentUserId();
-//        User owner = userRepository.findById(userId).orElseThrow(
-//                () -> new ResourceNotFoundException("User", userId.toString()));
         User owner = userRepository.getReferenceById(userId); // only works in transactional context, otherwise it will throw EntityNotFoundException when accessed. But since this method is transactional, it's fine to use getReferenceById which is more efficient than findById in this case.
         Project project = Project.builder()
                 .name(request.name())
